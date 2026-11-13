@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "signtracker"
+dynamic = ["version"]
+description = "Hand tracking sidecar for Signcaster. Sends letters to the game over localhost UDP."
+requires-python = ">=3.11"
+dependencies = [
+  "mediapipe",
+  "numpy",
+  "opencv-python",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "ruff",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "signtracker.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["signtracker*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
