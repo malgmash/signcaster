@@ -79,8 +79,8 @@ before release. Use the "Sign content review" issue template for anything that s
 
 ## Team
 
-- Malg
-- (friend's name)
+- Malama
+- Mustapha
 
 ## License
 
