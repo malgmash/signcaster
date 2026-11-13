@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "mode": "wizard",
+  "items": [
+    {
+      "id": "wizard.robe.starter",
+      "name": "Starter robe",
+      "slot": "robe",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/wizard/store/robe_starter.png"
+    },
+    {
+      "id": "wizard.wand.oak",
+      "name": "Oak wand",
+      "slot": "wand",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/wizard/store/wand_oak.png"
+    },
+    {
+      "id": "wizard.hat.starter",
+      "name": "Starter hat",
+      "slot": "hat",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/wizard/store/hat_starter.png"
+    },
+    {
+      "id": "wizard.spell_color.sky",
+      "name": "Sky blue spells",
+      "slot": "spell_color",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/wizard/store/spell_color_sky.png"
+    },
+    {
+      "id": "wizard.pet.none",
+      "name": "No pet",
+      "slot": "pet",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/wizard/store/pet_none.png"
+    },
+    {
+      "id": "wizard.boots.starter",
+      "name": "Starter boots",
+      "slot": "boots",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/wizard/store/boots_starter.png"
+    },
+    {
+      "id": "wizard.robe.galaxy",
+      "name": "Galaxy robe",
+      "slot": "robe",
+      "price": 300,
+      "unlock": null,
+      "art": "res://skins/wizard/store/robe_galaxy.png"
+    },
+    {
+      "id": "wizard.wand.crystal",
+      "name": "Crystal wand",
+      "slot": "wand",
+      "price": 250,
+      "unlock": null,
+      "art": "res://skins/wizard/store/wand_crystal.png"
+    },
+    {
+      "id": "wizard.spell_color.rainbow",
+      "name": "Rainbow spells",
+      "slot": "spell_color",
+      "price": 400,
+      "unlock": null,
+      "art": "res://skins/wizard/store/spell_color_rainbow.png"
+    },
+    {
+      "id": "wizard.pet.baby_dragon",
+      "name": "Baby dragon buddy",
+      "slot": "pet",
+      "price": 800,
+      "unlock": {
+        "type": "stars",
+        "stars": 24
+      },
+      "art": "res://skins/wizard/store/pet_baby_dragon.png"
+    },
+    {
+      "id": "wizard.hat.moon",
+      "name": "Moon hat",
+      "slot": "hat",
+      "price": 200,
+      "unlock": null,
+      "art": "res://skins/wizard/store/hat_moon.png"
+    },
+    {
+      "id": "wizard.boots.sparkle",
+      "name": "Sparkle boots",
+      "slot": "boots",
+      "price": 150,
+      "unlock": null,
+      "art": "res://skins/wizard/store/boots_sparkle.png"
+    }
+  ]
+}

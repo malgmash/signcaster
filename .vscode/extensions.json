@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "geequlim.godot-tools",
+    "ms-python.python",
+    "charliermarsh.ruff",
+    "anthropic.claude-code",
+    "openai.chatgpt"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "fast_threshold": 0.5,
+  "base_points": 100,
+  "combo_step": 0.1,
+  "combo_cap": 2.0,
+  "stars": {
+    "two_star_success_rate": 0.8,
+    "three_star_fast_rate": 0.5
+  }
+}

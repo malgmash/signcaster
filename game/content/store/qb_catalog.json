@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "mode": "qb",
+  "items": [
+    {
+      "id": "qb.helmet.home",
+      "name": "Home helmet",
+      "slot": "helmet",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/qb/store/helmet_home.png"
+    },
+    {
+      "id": "qb.jersey.home",
+      "name": "Home jersey",
+      "slot": "jersey",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/qb/store/jersey_home.png"
+    },
+    {
+      "id": "qb.cleats.classic",
+      "name": "Classic cleats",
+      "slot": "cleats",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/qb/store/cleats_classic.png"
+    },
+    {
+      "id": "qb.stadium.day",
+      "name": "Day stadium",
+      "slot": "stadium",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/qb/store/stadium_day.png"
+    },
+    {
+      "id": "qb.celebration.spike",
+      "name": "Ball spike",
+      "slot": "celebration",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/qb/store/celebration_spike.png"
+    },
+    {
+      "id": "qb.football.classic",
+      "name": "Classic football",
+      "slot": "football",
+      "price": 0,
+      "unlock": null,
+      "art": "res://skins/qb/store/football_classic.png"
+    },
+    {
+      "id": "qb.helmet.gold",
+      "name": "Gold helmet",
+      "slot": "helmet",
+      "price": 500,
+      "unlock": null,
+      "art": "res://skins/qb/store/helmet_gold.png"
+    },
+    {
+      "id": "qb.jersey.retro",
+      "name": "Retro jersey",
+      "slot": "jersey",
+      "price": 300,
+      "unlock": null,
+      "art": "res://skins/qb/store/jersey_retro.png"
+    },
+    {
+      "id": "qb.cleats.lightning",
+      "name": "Lightning cleats",
+      "slot": "cleats",
+      "price": 250,
+      "unlock": null,
+      "art": "res://skins/qb/store/cleats_lightning.png"
+    },
+    {
+      "id": "qb.stadium.night",
+      "name": "Night stadium",
+      "slot": "stadium",
+      "price": 1200,
+      "unlock": {
+        "type": "stars",
+        "stars": 30
+      },
+      "art": "res://skins/qb/store/stadium_night.png"
+    },
+    {
+      "id": "qb.celebration.victory_dance",
+      "name": "Victory dance",
+      "slot": "celebration",
+      "price": 400,
+      "unlock": null,
+      "art": "res://skins/qb/store/celebration_victory_dance.png"
+    },
+    {
+      "id": "qb.football.glow",
+      "name": "Glow football",
+      "slot": "football",
+      "price": 150,
+      "unlock": null,
+      "art": "res://skins/qb/store/football_glow.png"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "game/.godot": true,
+    "**/__pycache__": true
+  },
+  "python.defaultInterpreterPath": "tracker/.venv/bin/python"
+}

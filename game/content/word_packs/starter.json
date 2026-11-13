@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "id": "starter",
+  "title": "Starter pack",
+  "kind": "fingerspell",
+  "unlock": {
+    "type": "default"
+  },
+  "words": [
+    {
+      "id": "starter.blue",
+      "word": "BLUE",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.moon",
+      "word": "MOON",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.cat",
+      "word": "CAT",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.dog",
+      "word": "DOG",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.sun",
+      "word": "SUN",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.milk",
+      "word": "MILK",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.eat",
+      "word": "EAT",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.mom",
+      "word": "MOM",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.dad",
+      "word": "DAD",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.home",
+      "word": "HOME",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.book",
+      "word": "BOOK",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    },
+    {
+      "id": "starter.fish",
+      "word": "FISH",
+      "kid_safe": true,
+      "media": {
+        "word_sign": null
+      },
+      "review_status": "placeholder"
+    }
+  ]
+}

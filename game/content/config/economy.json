@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "coins_per_success": 10,
+  "fast_bonus": 5,
+  "perfect_level_bonus": 25,
+  "daily_challenge_bonus": 20,
+  "streak_freeze_every_days": 7,
+  "max_streak_freezes": 2
+}
