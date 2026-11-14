@@ -104,14 +104,15 @@ stateDiagram-v2
     Succeeded --> Reward
     Failed --> RetryOffered
     RetryOffered --> Study: retry()
-    RetryOffered --> Reward: continue
-    Reward --> Idle: more challenges in level
-    Reward --> LevelDone: level finished
+    RetryOffered --> Reward: next_challenge()
+    Reward --> Idle: next_challenge(), more challenges in level
+    Reward --> LevelDone: next_challenge(), level finished
     LevelDone --> [*]
 ```
 
 `ChallengeManager` owns this state machine. Each transition emits the matching signal from EVENTS.md.
 Pausing freezes the live timer in any state.
+The skin calls `Game.next_challenge()` when it is done showing a result, so it controls the pacing.
 
 ## A Sign it challenge, step by step
 

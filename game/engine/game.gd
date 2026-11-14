@@ -6,9 +6,9 @@ extends Node
 ## Most methods forward to the engine autoload that owns the rule.
 
 
-## Starts a session in [param _mode] ("qb" or "wizard"). TODO(M2)
-func start_session(_mode: String) -> void:
-	pass
+## Starts a session in [param mode] ("qb" or "wizard").
+func start_session(mode: String) -> void:
+	ChallengeManager.start_session(mode)
 
 
 ## Begins the level [param level_id].
@@ -39,6 +39,11 @@ func give_up() -> void:
 ## Retries the last failed challenge.
 func retry() -> void:
 	ChallengeManager.retry()
+
+
+## The skin is done showing the result: go to the next challenge, or finish the level.
+func next_challenge() -> void:
+	ChallengeManager.next_challenge()
 
 
 ## Pauses or resumes the game.

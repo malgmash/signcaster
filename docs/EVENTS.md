@@ -14,7 +14,7 @@ Rules:
 | Signal | Arguments | Emitted when |
 | --- | --- | --- |
 | `session_started` | `mode: String, skin_id: String` | A mode is chosen from the main menu |
-| `level_started` | `level_id: String, level_index: int, is_boss: bool` | A play or wave group begins |
+| `level_started` | `level_id: String, level_index: int, is_boss: bool` | A play or wave group begins (`level_index` starts at 0) |
 | `level_completed` | `level_id: String, stars: int, coins_earned: int, perfect: bool` | All challenges in the level are done |
 | `session_ended` | `reason: String` | Player quits to menu (`"quit"`) or closes the game (`"exit"`) |
 
@@ -30,6 +30,7 @@ Rules:
 | `bubble_style_changed` | `challenge_id: String, bubble_style: String` | Bubble fades or flashes during the live phase |
 | `letter_accepted` | `challenge_id: String, letter: String, index: int` | A correct next letter is entered (typed or signed) |
 | `letter_rejected` | `challenge_id: String, letter: String, index: int` | A wrong letter is typed (Read it only) |
+| `letter_removed` | `challenge_id: String, index: int` | Backspace removed the accepted letter at `index` (Read it only) |
 | `word_changed` | `challenge_id: String, new_word: String` | An audible twist swaps the word mid-challenge |
 | `challenge_succeeded` | `challenge_id: String, result: Dictionary` | Last letter accepted before time runs out |
 | `challenge_failed` | `challenge_id: String, reason: String, letters_correct: int, letters_total: int` | Timer ran out (`"timeout"`) or player gave up (`"gave_up"`) |
@@ -96,6 +97,7 @@ Rules:
 | `skip_study() -> void` | Player is ready before the study timer ends |
 | `give_up() -> void` | Ends the challenge as a fail |
 | `retry() -> void` | Retry the last failed challenge |
+| `next_challenge() -> void` | The skin is done showing the result: go to the next challenge, or finish the level |
 | `set_paused(paused: bool) -> void` | Pause or resume |
 | `buy_item(item_id: String) -> void` | Store purchase |
 | `equip_item(item_id: String) -> void` | Equip a cosmetic |
