@@ -16,8 +16,9 @@ For how it is built, see ARCHITECTURE.md.
 | | QB mode | Wizard mode |
 | --- | --- | --- |
 | Audience | Teens and adults | Kids |
-| Level unit | Play | Wave |
-| Level group | Drive (about 4 plays), season (several drives) | Path (about 4 waves), world (several paths) |
+| Challenge (one word) | Play | Wave |
+| Level unit | Drive (about 4 plays) | Path (about 4 waves) |
+| Level group | Season (several drives) | World (several paths) |
 | Study scene | Huddle with play card | Spellbook |
 | Pressure | Defense rushes, pocket timer drains | Monster walks down the path |
 | Fast success | Touchdown or long gain | Spell hits, monster poofs, combo |
@@ -79,7 +80,7 @@ Levels follow a sawtooth curve: each group of levels ramps up to a boss, then th
 - Track the last 8 challenges.
 - Two fails in a row: next live timer is 15% longer (at most 30% longer than the level's base).
 - Three fast successes in a row: next live timer is 8% shorter (at most 20% shorter than base).
-- Adjustments reset at the start of each drive or path.
+- Adjustments reset at the start of each level group (a season or a world).
 - Target: players succeed on roughly 3 out of 4 challenges. This is a design target, tune it with playtests.
 
 ### Word review (spaced repetition)

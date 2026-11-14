@@ -8,7 +8,7 @@ Check the box when the milestone is merged and playtested.
 | --- | --- | --- | --- | --- |
 | M0 | Repo and project setup | `00-repo-setup.md` | Either | [x] |
 | M1 | Engine skeleton | `01-engine-skeleton.md` | Person A | [x] |
-| M2 | Read it loop with the debug skin | `02-read-it-loop.md` | Person A | [ ] |
+| M2 | Read it loop with the debug skin | `02-read-it-loop.md` | Person A | [x] |
 | M3 | QB skin, first drive | `03-qb-skin-v1.md` | Person B | [ ] |
 | M4 | Tracker sidecar and fake tracker | `04-tracker-sidecar.md` | Person A | [ ] |
 | M5 | Letter recording and classifier | `05-letter-classifier.md` | Person A | [ ] |
