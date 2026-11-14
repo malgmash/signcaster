@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/memory_bubble.gd" id="1_bubble"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bubble"]
+content_margin_left = 14.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+bg_color = Color(0.97, 0.97, 0.95, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.15, 0.15, 0.2, 1)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+
+[node name="MemoryBubble" type="PanelContainer"]
+visible = false
+theme_override_styles/panel = SubResource("StyleBoxFlat_bubble")
+script = ExtResource("1_bubble")
+
+[node name="Content" type="CenterContainer" parent="."]
+layout_mode = 2
+
+[node name="Word" type="Label" parent="Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1)
+theme_override_font_sizes/font_size = 44
+
+[node name="Signs" type="HBoxContainer" parent="Content"]
+layout_mode = 2
+theme_override_constants/separation = 6

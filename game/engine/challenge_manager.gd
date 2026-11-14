@@ -233,6 +233,8 @@ func _make_challenge(entry: Dictionary) -> Dictionary:
 		"bubble_style": Difficulty.bubble_style_for(tier, _mode),
 		"is_review": false,  # TODO(M7): true when WordBank picked it for review.
 		"twist": "" if twist == null else str(twist),
+		"index_in_level": _word_index,
+		"level_size": _level_words.size(),
 	}
 
 

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ui/letter_slots.gd" id="1_slots"]
+
+[node name="LetterSlots" type="HBoxContainer"]
+theme_override_constants/separation = 8
+alignment = 1
+script = ExtResource("1_slots")
