@@ -1,4 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://skins/debug/debug_main.gd" id="1_debug"]
 
 [node name="DebugMain" type="Control"]
 layout_mode = 3
@@ -7,14 +9,150 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_debug")
 
-[node name="Label" type="Label" parent="."]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Rows" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/Rows"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
 text = "Signcaster debug skin"
-horizontal_alignment = 1
-vertical_alignment = 1
+
+[node name="Controls" type="HBoxContainer" parent="Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ModeLabel" type="Label" parent="Margin/Rows/Controls"]
+layout_mode = 2
+text = "Mode"
+
+[node name="ModePicker" type="OptionButton" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+selected = 0
+item_count = 2
+popup/item_0/text = "qb"
+popup/item_0/id = 0
+popup/item_1/text = "wizard"
+popup/item_1/id = 1
+
+[node name="LevelLabel" type="Label" parent="Margin/Rows/Controls"]
+layout_mode = 2
+text = "Level"
+
+[node name="LevelPicker" type="SpinBox" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1.0
+max_value = 4.0
+value = 1.0
+
+[node name="StartButton" type="Button" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Start level"
+
+[node name="SkipButton" type="Button" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Skip study"
+
+[node name="GiveUpButton" type="Button" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Give up"
+
+[node name="RetryButton" type="Button" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Retry"
+
+[node name="NextButton" type="Button" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Next"
+
+[node name="PauseButton" type="Button" parent="Margin/Rows/Controls"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+toggle_mode = true
+text = "Pause"
+
+[node name="StateLabel" type="Label" parent="Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "State: press Start level"
+
+[node name="WordLabel" type="Label" parent="Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = " "
+
+[node name="Cards" type="HBoxContainer" parent="Margin/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TypedLabel" type="Label" parent="Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = " "
+
+[node name="TimeRow" type="HBoxContainer" parent="Margin/Rows"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="TimeBar" type="ProgressBar" parent="Margin/Rows/TimeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 20)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.001
+show_percentage = false
+
+[node name="TimeLabel" type="Label" parent="Margin/Rows/TimeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Time left: -"
+
+[node name="ResultLabel" type="Label" parent="Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = " "
+
+[node name="EventLabel" type="Label" parent="Margin/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+text = " "
+
+[node name="Help" type="Label" parent="Margin/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.65, 0.7, 1)
+text = "Type the word with A to Z. Backspace deletes the last correct letter. In Read it the word hides when the timer starts, so read the cards."
