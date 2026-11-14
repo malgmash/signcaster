@@ -1,0 +1,143 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://skins/qb/qb_main.gd" id="1_main"]
+[ext_resource type="Script" path="res://skins/qb/scripts/qb_field.gd" id="2_field"]
+[ext_resource type="PackedScene" path="res://ui/memory_bubble.tscn" id="3_bubble"]
+[ext_resource type="PackedScene" path="res://ui/letter_slots.tscn" id="4_slots"]
+[ext_resource type="PackedScene" path="res://ui/timer_bar.tscn" id="5_timer"]
+[ext_resource type="Script" path="res://skins/qb/scripts/hud.gd" id="6_hud"]
+[ext_resource type="PackedScene" path="res://skins/qb/scenes/huddle_view.tscn" id="7_huddle"]
+[ext_resource type="PackedScene" path="res://skins/qb/scenes/outcome_view.tscn" id="8_outcome"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+content_margin_left = 20.0
+content_margin_top = 8.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0.5)
+
+[node name="QbMain" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_main")
+
+[node name="Field" type="Node2D" parent="."]
+script = ExtResource("2_field")
+
+[node name="BubbleArea" type="CenterContainer" parent="."]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 402.0
+offset_right = 990.0
+offset_bottom = 518.0
+mouse_filter = 2
+
+[node name="MemoryBubble" parent="BubbleArea" instance=ExtResource("3_bubble")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LetterSlots" parent="." instance=ExtResource("4_slots")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 290.0
+offset_top = 522.0
+offset_right = 990.0
+offset_bottom = 570.0
+mouse_filter = 2
+
+[node name="PocketTimer" parent="." instance=ExtResource("5_timer")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 440.0
+offset_top = 674.0
+offset_right = 840.0
+offset_bottom = 694.0
+
+[node name="HudPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="Hud" type="HBoxContainer" parent="HudPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("6_hud")
+
+[node name="DriveLabel" type="Label" parent="HudPanel/Hud"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 22
+text = "Drive 1    Play 1 of 4"
+
+[node name="PointsLabel" type="Label" parent="HudPanel/Hud"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Points 0"
+
+[node name="HuddleView" parent="." instance=ExtResource("7_huddle")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="OutcomeView" parent="." instance=ExtResource("8_outcome")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="PauseOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="Center" type="CenterContainer" parent="PauseOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Rows" type="VBoxContainer" parent="PauseOverlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="PauseOverlay/Center/Rows"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "Timeout"
+horizontal_alignment = 1
+
+[node name="Note" type="Label" parent="PauseOverlay/Center/Rows"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "The clock is stopped. Press Esc to play on."
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PauseOverlay/Center/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 24
+text = "Resume"
+
+[node name="PauseMenuButton" type="Button" parent="PauseOverlay/Center/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 24
+text = "Main menu"

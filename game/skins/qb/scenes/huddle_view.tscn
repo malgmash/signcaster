@@ -1,0 +1,118 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://skins/qb/scripts/huddle_view.gd" id="1_huddle"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_call"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.97, 0.97, 0.95, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+content_margin_left = 20.0
+content_margin_top = 16.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+bg_color = Color(0.08, 0.1, 0.14, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.05, 0.62, 0.33, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="HuddleView" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_huddle")
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Ring" type="Node2D" parent="."]
+position = Vector2(330, 430)
+
+[node name="CallBubble" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 200.0
+offset_right = 560.0
+offset_bottom = 260.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_call")
+
+[node name="CallLabel" type="Label" parent="CallBubble"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1)
+theme_override_font_sizes/font_size = 28
+text = "Blue 42, on two!"
+horizontal_alignment = 1
+
+[node name="PlayCard" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 660.0
+offset_top = 150.0
+offset_right = 1200.0
+offset_bottom = 600.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Rows" type="VBoxContainer" parent="PlayCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="Header" type="Label" parent="PlayCard/Rows"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.85, 0.65, 1)
+theme_override_font_sizes/font_size = 20
+text = "PLAY CALL: remember this word"
+horizontal_alignment = 1
+
+[node name="WordLabel" type="Label" parent="PlayCard/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 72
+text = "BLUE"
+horizontal_alignment = 1
+
+[node name="Signs" type="HBoxContainer" parent="PlayCard/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="StudyBar" type="ProgressBar" parent="PlayCard/Rows"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+max_value = 1.0
+step = 0.0
+value = 1.0
+show_percentage = false
+
+[node name="ReadyButton" type="Button" parent="PlayCard/Rows"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+focus_mode = 0
+theme_override_font_sizes/font_size = 24
+text = "  Ready, snap it! (Space)  "
