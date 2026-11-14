@@ -18,6 +18,8 @@ Plan first and wait for my OK. Add tests for settings round trips.
 
 ## B. One-click launcher
 
+> Replaced by M12 (`12-standalone-distribution.md`, ADR 0006). Kept for reference. Do not run this one.
+
 ```text
 Make Signcaster start the tracker automatically. Follow AGENTS.md. Read docs/adr/0002-python-tracker-sidecar.md.
 When the game starts, if no tracker hello arrives within 2 seconds, try to launch the tracker as a child process using the Python in tracker/.venv (Mac and Windows paths), and stop it when the game quits. If launching fails, keep playing in Read it and show how to start it by hand.
@@ -40,6 +42,8 @@ First write a design note comparing it with MediaPipe on the M5 (speed, battery,
 ```
 
 ## E. Release build on itch.io
+
+> Replaced by M12 (`12-standalone-distribution.md`, ADR 0006), which covers export presets, the reviewed-sign check, cheat keys and RELEASE.md. Kept for reference. Do not run this one.
 
 ```text
 Prepare a Signcaster release. Follow AGENTS.md.

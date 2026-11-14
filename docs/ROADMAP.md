@@ -1,7 +1,8 @@
 # Roadmap
 
 About 12 weeks part time. Each milestone has a matching prompt in `docs/prompts/`.
-Do them in order. Check the box when the milestone is merged and playtested.
+Do them in order. M12 is the exception: it can run alongside M7 to M10 once M6 is merged, and must be done before the M11 release.
+Check the box when the milestone is merged and playtested.
 
 | # | Milestone | Prompt | Suggested owner | Done |
 | --- | --- | --- | --- | --- |
@@ -17,6 +18,7 @@ Do them in order. Check the box when the milestone is merged and playtested.
 | M9 | Wizard skin and wizard shop | `09-wizard-skin.md` | Person B | [ ] |
 | M10 | Saves, daily challenge, streaks | `10-save-daily-streaks.md` | Person A | [ ] |
 | M11 | Whole-word signs, polish, release | `11-polish-release.md` | Both | [ ] |
+| M12 | Standalone downloads (Windows and macOS) | `12-standalone-distribution.md` | Either | [ ] |
 
 ## Milestone goals and acceptance
 
@@ -39,6 +41,7 @@ Huddle with play card, snap, memory bubble, pocket timer, touchdown and sack. Pl
 ### M4 Tracker sidecar (week 5)
 `signtracker` sends `hello`, `hand` and `status` messages. Fake tracker sends scripted letters. `TrackerClient` shows status in the debug skin.
 **Done when:** the debug skin shows "connected" with the fake tracker and "disconnected" when it stops.
+Also add the game's `ping` message and the tracker's `--exit-when-orphaned` flag from ADR 0006, so M12 can package the tracker safely.
 
 ### M5 Letter classifier (weeks 5 to 6)
 Recording tool (landmarks only), training script, smoother, first model for a small set of letters, then the full static alphabet.
@@ -67,3 +70,7 @@ Atomic saves, migrations, daily challenge, streak and earned streak freezes.
 ### M11 Polish and release (weeks 11 to 12)
 Whole-word signs for reviewed words, Mac Vision helper (optional), settings menu, accessibility options, ASL playtests, itch.io build.
 **Done when:** a build is on itch.io and every shipped sign is marked `reviewed`.
+
+### M12 Standalone downloads (any time after M6, before the M11 release)
+One download per platform with no Python and no setup. The tracker is bundled with PyInstaller. The game launches it after the player opts in to the camera, and a crashed game never leaves it running. Windows builds come from `scripts/build_release.py`, macOS builds from GitHub Actions. See ADR 0006.
+**Done when:** a player on Windows with no Python downloads the zip from a GitHub Release, plays Read it at once and Sign it after the camera opt-in. CI produces the macOS build, which stays "experimental" until an outside tester confirms it on a real Mac. Both downloads are under 300 MB.

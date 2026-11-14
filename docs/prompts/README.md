@@ -43,6 +43,7 @@ If a skill does not show up, restart the agent panel and check the folder names.
 | [09-wizard-skin.md](09-wizard-skin.md) | M9 Wizard skin and wizard shop |
 | [10-save-daily-streaks.md](10-save-daily-streaks.md) | M10 Saves, daily challenge, streaks |
 | [11-polish-release.md](11-polish-release.md) | M11 Polish and release |
+| [12-standalone-distribution.md](12-standalone-distribution.md) | M12 Standalone downloads (can start after M6) |
 
 ## Templates
 
