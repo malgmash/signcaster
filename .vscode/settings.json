@@ -5,6 +5,6 @@
     "game/.godot": true,
     "**/__pycache__": true
   },
-  "python.defaultInterpreterPath": "tracker/.venv/bin/python",
+  "python.defaultInterpreterPath": "tracker/.venv/Scripts/python.exe",
   "python-envs.defaultEnvManager": "ms-python.python:system"
 }
