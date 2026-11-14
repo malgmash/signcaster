@@ -14,6 +14,24 @@ config/name="Signcaster"
 run/main_scene="res://skins/debug/debug_main.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 
+[autoload]
+
+EventBus="*res://engine/event_bus.gd"
+Clock="*res://engine/clock.gd"
+Config="*res://engine/config.gd"
+SaveSystem="*res://engine/save_system.gd"
+WordBank="*res://engine/word_bank.gd"
+Difficulty="*res://engine/difficulty.gd"
+Economy="*res://engine/economy.gd"
+Store="*res://engine/store.gd"
+TrackerClient="*res://engine/tracker_client.gd"
+ChallengeManager="*res://engine/challenge_manager.gd"
+Game="*res://engine/game.gd"
+
+[debug]
+
+gdscript/warnings/untyped_declaration=2
+
 [display]
 
 window/size/viewport_width=1280
