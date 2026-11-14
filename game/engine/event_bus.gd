@@ -36,6 +36,8 @@ signal bubble_style_changed(challenge_id: String, bubble_style: String)
 signal letter_accepted(challenge_id: String, letter: String, index: int)
 ## A wrong letter was typed (Read it only).
 signal letter_rejected(challenge_id: String, letter: String, index: int)
+## Backspace removed the accepted letter at [param index] (Read it only).
+signal letter_removed(challenge_id: String, index: int)
 ## An audible twist swapped the word mid-challenge.
 signal word_changed(challenge_id: String, new_word: String)
 ## The last letter was accepted before time ran out. See EVENTS.md for the result keys.
