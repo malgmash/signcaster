@@ -52,5 +52,23 @@ jobs:
         working-directory: tracker
         run: python -m pytest
 
-  # Milestone 1 adds a job here that downloads the team's Godot version and runs GUT headless:
-  # godot --headless --path game -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
+  godot-tests:
+    runs-on: ubuntu-latest
+    env:
+      # Keep in step with the version on both laptops. Upgrading Godot is a team decision.
+      GODOT_VERSION: "4.7.2"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Godot ${{ env.GODOT_VERSION }}
+        run: |
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          mv "Godot_v${GODOT_VERSION}-stable_linux.x86_64" godot
+          chmod +x godot
+          ./godot --version
+      - name: Import the project
+        # Builds Godot's cache (game/.godot) so scripts and addons are known before tests run.
+        run: ./godot --headless --path game --import
+      - name: Run GUT tests
+        run: ./godot --headless --path game -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit
