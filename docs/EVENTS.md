@@ -14,7 +14,7 @@ Rules:
 | Signal | Arguments | Emitted when |
 | --- | --- | --- |
 | `session_started` | `mode: String, skin_id: String` | A mode is chosen from the main menu |
-| `level_started` | `level_id: String, level_index: int, is_boss: bool` | A play or wave group begins |
+| `level_started` | `level_id: String, level_index: int, is_boss: bool` | A play or wave group begins (`level_index` starts at 0) |
 | `level_completed` | `level_id: String, stars: int, coins_earned: int, perfect: bool` | All challenges in the level are done |
 | `session_ended` | `reason: String` | Player quits to menu (`"quit"`) or closes the game (`"exit"`) |
 

@@ -332,6 +332,15 @@ func test_retry_replays_the_same_word() -> void:
 	assert_signal_emit_count(EventBus, "study_started", 2)
 
 
+func test_retry_after_a_timeout_replays_the_same_word() -> void:
+	_start_live()
+	var first_word: String = _word()
+	_wait(12.0)
+	_cm.retry()
+	assert_eq(_cm.get_state(), "study")
+	assert_eq(_word(), first_word)
+
+
 func test_retry_only_works_after_a_fail() -> void:
 	_start_live()
 	_type(_word())
@@ -375,6 +384,23 @@ func test_start_level_needs_a_session() -> void:
 	_cm.start_level(QB_LEVEL)
 	assert_push_error("start_session")
 	assert_signal_not_emitted(EventBus, "level_started")
+
+
+func test_start_level_is_ignored_mid_challenge() -> void:
+	_start_live()
+	var id_before: String = _id()
+	_cm.start_level(QB_LEVEL)
+	assert_eq(_cm.get_state(), "live")
+	assert_eq(_id(), id_before)
+	assert_signal_emit_count(EventBus, "level_started", 1)
+
+
+func test_start_level_works_once_the_challenge_has_ended() -> void:
+	_start_live()
+	_cm.give_up()
+	_cm.start_level(QB_LEVEL)
+	assert_signal_emit_count(EventBus, "level_started", 2)
+	assert_eq(_cm.get_state(), "study")
 
 
 func test_unknown_level_is_reported() -> void:

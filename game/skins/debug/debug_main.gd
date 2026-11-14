@@ -62,10 +62,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	var key: InputEventKey = event as InputEventKey
 	if key == null or not key.pressed or key.echo:
 		return
+	# unicode is the character the keyboard layout produced, so non-QWERTY keyboards work too.
+	var typed: String = char(key.unicode).to_upper() if key.unicode > 0 else ""
 	if key.keycode == KEY_BACKSPACE:
 		Game.delete_typed_letter()
-	elif key.keycode >= KEY_A and key.keycode <= KEY_Z:
-		Game.submit_typed_letter(char(key.keycode))
+	elif typed.length() == 1 and typed >= "A" and typed <= "Z":
+		Game.submit_typed_letter(typed)
 	else:
 		return
 	get_viewport().set_input_as_handled()

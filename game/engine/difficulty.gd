@@ -12,6 +12,8 @@ const LEVEL_ID_PARTS: int = 3
 ## Level ids for [param mode], like "qb.group_1.1", in play order.
 func get_level_ids(mode: String) -> PackedStringArray:
 	var ids: PackedStringArray = []
+	if get_mode_settings(mode).is_empty():
+		return ids
 	for group: Dictionary in _groups():
 		var tier_ids: Array = group.get("tiers", [])
 		for number: int in range(1, tier_ids.size() + 1):
@@ -30,7 +32,8 @@ func get_tier(level_id: String) -> Dictionary:
 	var parts: PackedStringArray = level_id.split(".")
 	if parts.size() != LEVEL_ID_PARTS or get_mode_settings(parts[0]).is_empty():
 		return {}
-	if not parts[2].is_valid_int():
+	# Only the plain spelling ("1", not "01" or "+1"), so get_tier and get_level_ids agree.
+	if not parts[2].is_valid_int() or str(parts[2].to_int()) != parts[2]:
 		return {}
 	for group: Dictionary in _groups():
 		if group.get("id", "") != parts[1]:

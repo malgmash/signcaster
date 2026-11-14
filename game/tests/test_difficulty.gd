@@ -3,7 +3,17 @@ extends GutTest
 ## Rubber-banding tests come with M7.
 
 const METHODS: PackedStringArray = [
-	"get_level_ids", "get_tier", "live_seconds_for", "record_result", "reset_group", "get_factor"
+	"get_level_ids",
+	"get_level_index",
+	"get_tier",
+	"get_mode_settings",
+	"challenges_for",
+	"bubble_style_for",
+	"study_seconds_for",
+	"live_seconds_for",
+	"record_result",
+	"reset_group",
+	"get_factor",
 ]
 
 
@@ -30,8 +40,16 @@ func test_get_tier_finds_the_tier_for_a_level() -> void:
 
 
 func test_unknown_levels_have_no_tier() -> void:
-	for level_id: String in ["qb.group_1.5", "qb.group_1.0", "chess.group_1.1", "qb.group_1", ""]:
+	var unknown: PackedStringArray = [
+		"qb.group_1.5", "qb.group_1.0", "qb.group_1.01", "chess.group_1.1", "qb.group_1", ""
+	]
+	for level_id: String in unknown:
 		assert_eq(Difficulty.get_tier(level_id), {}, "'%s' should be unknown" % level_id)
+		assert_eq(Difficulty.get_level_index(level_id), -1, "'%s' should have no index" % level_id)
+
+
+func test_unknown_mode_has_no_levels() -> void:
+	assert_eq(Difficulty.get_level_ids("chess"), PackedStringArray())
 
 
 func test_boss_tier_overrides_the_challenge_count() -> void:

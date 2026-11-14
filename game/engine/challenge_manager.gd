@@ -61,6 +61,10 @@ func start_level(level_id: String) -> void:
 	if _mode.is_empty():
 		push_error("ChallengeManager: call start_session() before start_level()")
 		return
+	# Starting over mid-challenge would leave the skin showing a timer that never ends.
+	if _state == STATE_STUDY or _state == STATE_LIVE:
+		push_warning("ChallengeManager: give up or finish the challenge before start_level()")
+		return
 	var tier: Dictionary = Difficulty.get_tier(level_id)
 	if tier.is_empty() or level_id.get_slice(".", 0) != _mode:
 		push_error("ChallengeManager: '%s' is not a %s level" % [level_id, _mode])
@@ -280,6 +284,7 @@ func _accepts_typing() -> bool:
 func _restart_phase_clock() -> void:
 	_phase_started_at = Clock.now()
 	_paused_total = 0.0
+	# If the game is paused as a phase starts, that pause only counts from the phase start.
 	_paused_at = _phase_started_at
 
 
