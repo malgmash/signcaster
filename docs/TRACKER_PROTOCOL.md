@@ -17,10 +17,13 @@ Ports are configurable (`settings.tracker_port` in the save file, `--game-port` 
 - Every message has `"v": 1` (protocol version) and `"type"`.
 - Messages are small (under 2 KB). The tracker sends at most 30 messages per second.
 - If the game hears nothing for 2 seconds, it sets tracker status to `"disconnected"`.
+- Each side uses one socket to listen and a separate one to send. On Windows, a UDP socket that sent to a closed port reports an error on its next receive, so mixing the two jobs breaks listening while the other side is not running yet.
 
 ## Tracker to game
 
-### hello (on start, then every 2 seconds as a heartbeat)
+### hello (on start, then every second as a heartbeat)
+
+The heartbeat is half the game's 2 second silence limit, so one late packet never looks like a disconnect.
 
 ```json
 { "v": 1, "type": "hello", "tracker": "mediapipe", "version": "0.1.0", "fps": 30 }
@@ -54,6 +57,9 @@ Ports are configurable (`settings.tracker_port` in the save file, `--game-port` 
 
 `status` is one of `"ok"`, `"no_camera"`, `"model_missing"`, `"low_light"`, `"error"`.
 
+- While a problem lasts, the tracker repeats its `status` just before each `hello`, so a game that starts later still learns about it, and never shows "connected" for a moment first.
+- The game treats any status other than `"ok"` as `"disconnected"`: the tracker is alive, but Sign it cannot work.
+
 ## Game to tracker
 
 ### config (on connect and when settings change)
@@ -79,6 +85,16 @@ never what it expects.
 
 The tracker may lower its frame rate while idle to save battery.
 
+### ping (every second)
+
+```json
+{ "v": 1, "type": "ping" }
+```
+
+The game sends this every second while it runs. A tracker started with `--exit-when-orphaned` quits after 5 seconds without a ping, counting from its own start, so a crashed or closed game never leaves the camera on (see docs/adr/0006-standalone-distribution.md).
+
+`config` fields the game leaves out keep the tracker's current value. The values come from `game/content/config/tracker.json`.
+
 ## Recognition pipeline (inside the tracker)
 
 1. Capture a webcam frame (target 30 fps).
@@ -91,5 +107,5 @@ The tracker may lower its frame rate while idle to save battery.
 
 ## Fake tracker
 
-`python -m signtracker.fake --word BLUE --delay 0.6` sends a `hello`, then the letters of the word with a delay between them.
+`python -m signtracker.fake --word BLUE --delay 0.6 [--loop]` sends a `hello`, then the letters of the word with a delay between them, keeping the heartbeat going.
 Use it to test Sign it without a webcam, in CI, and when the real model is not trained yet.
