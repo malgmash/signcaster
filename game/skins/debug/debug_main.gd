@@ -81,6 +81,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	var key: InputEventKey = event as InputEventKey
 	if key == null or not key.pressed or key.echo:
 		return
+	# Get the viewport now: F9 changes scene, which takes this node out of the tree at once.
+	var viewport: Viewport = get_viewport()
 	# unicode is the character the keyboard layout produced, so non-QWERTY keyboards work too.
 	var typed: String = char(key.unicode).to_upper() if key.unicode > 0 else ""
 	if key.keycode == KEY_F9:
@@ -91,7 +93,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		Game.submit_typed_letter(typed)
 	else:
 		return
-	get_viewport().set_input_as_handled()
+	viewport.set_input_as_handled()
 
 
 func _on_start_pressed() -> void:

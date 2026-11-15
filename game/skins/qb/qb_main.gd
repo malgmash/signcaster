@@ -87,8 +87,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	var key: InputEventKey = event as InputEventKey
 	if key == null or not key.pressed or key.echo:
 		return
+	# Get the viewport now: F9 changes scene, which takes this node out of the tree at once.
+	var viewport: Viewport = get_viewport()
 	if _handle_key(key):
-		get_viewport().set_input_as_handled()
+		viewport.set_input_as_handled()
 
 
 # Returns true if the key did something.
