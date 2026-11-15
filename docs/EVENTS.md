@@ -102,6 +102,7 @@ Rules:
 | `retry() -> void` | Retry the last failed challenge |
 | `next_challenge() -> void` | The skin is done showing the result: go to the next challenge, or finish the level |
 | `set_paused(paused: bool) -> void` | Pause or resume |
+| `get_tracker_status() -> String` | The tracker status right now (`"connected"`, `"no_hand"` or `"disconnected"`). Read it once when a skin opens, then follow `tracker_status_changed` |
 | `buy_item(item_id: String) -> void` | Store purchase |
 | `equip_item(item_id: String) -> void` | Equip a cosmetic |
 

@@ -45,6 +45,9 @@ func _ready() -> void:
 	%NextButton.pressed.connect(Game.next_challenge)
 	_pause_button.toggled.connect(Game.set_paused)
 	_connect_engine()
+	# The tracker may have connected while the menu was open, so ask instead of assuming.
+	_tracker_status = Game.get_tracker_status()
+	_refresh_tracker()
 
 
 func _connect_engine() -> void:
