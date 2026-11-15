@@ -208,6 +208,7 @@ tracker/
     classifier.py    load model, predict letter probabilities
     smoothing.py     hold and release logic (pure, heavily tested)
     protocol.py      message builders and parser, UDP sockets
+    pacing.py        rate limits, heartbeat and orphan timer (pure, time passed in)
     fake.py          scripted letters for tests and demos
   tools/
     record.py        records landmark samples (never images) with a countdown and consent prompt

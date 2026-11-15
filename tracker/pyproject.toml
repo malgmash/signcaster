@@ -7,10 +7,11 @@ name = "signtracker"
 dynamic = ["version"]
 description = "Hand tracking sidecar for Signcaster. Sends letters to the game over localhost UDP."
 requires-python = ">=3.11"
+# No opencv-python: MediaPipe already installs opencv-contrib-python, and two packages that
+# both provide the cv2 module overwrite each other's files.
 dependencies = [
   "mediapipe",
   "numpy",
-  "opencv-python",
 ]
 
 [project.optional-dependencies]

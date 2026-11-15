@@ -51,7 +51,8 @@ Rules:
 
 | Signal | Arguments | Emitted when |
 | --- | --- | --- |
-| `tracker_status_changed` | `status: String` | `"connected"`, `"no_hand"`, `"disconnected"` |
+| `tracker_status_changed` | `status: String` | `"connected"`, `"no_hand"`, `"disconnected"` (also while the tracker reports a problem such as `no_camera`) |
+| `tracker_message_received` | `message_type: String, detail: String` | Any tracker message arrived. `detail` is set for `status` messages, like `"no_camera: Camera index 0 could not be opened"`. For debug views |
 | `sign_it_unavailable` | `reason: String` | Sign it challenges are being converted to Read it |
 | `difficulty_adjusted` | `knob: String, value: float` | Rubber-banding changes a knob (for debug overlay) |
 | `paused_changed` | `paused: bool` | Game paused or resumed |
@@ -101,6 +102,7 @@ Rules:
 | `retry() -> void` | Retry the last failed challenge |
 | `next_challenge() -> void` | The skin is done showing the result: go to the next challenge, or finish the level |
 | `set_paused(paused: bool) -> void` | Pause or resume |
+| `get_tracker_status() -> String` | The tracker status right now (`"connected"`, `"no_hand"` or `"disconnected"`). Read it once when a skin opens, then follow `tracker_status_changed` |
 | `buy_item(item_id: String) -> void` | Store purchase |
 | `equip_item(item_id: String) -> void` | Equip a cosmetic |
 

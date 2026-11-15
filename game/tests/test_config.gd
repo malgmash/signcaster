@@ -5,8 +5,8 @@ const ConfigScript = preload("res://engine/config.gd")
 const REAL_CONTENT: String = "res://content"
 const BAD_CONTENT: String = "res://tests/fixtures/bad_content"
 const NO_CONTENT: String = "res://tests/fixtures/does_not_exist"
-## 3 config files, 2 store catalogs and the word_packs folder.
-const FILES_IN_A_FULL_LOAD: int = 6
+## 4 config files, 2 store catalogs and the word_packs folder.
+const FILES_IN_A_FULL_LOAD: int = 7
 
 
 func _new_config() -> Node:
@@ -23,6 +23,7 @@ func test_real_content_has_every_file() -> void:
 	assert_true(config.load_from(REAL_CONTENT))
 	assert_true(config.get_difficulty().has("tiers"))
 	assert_true(config.get_scoring().has("base_points"))
+	assert_true(config.get_tracker().has("min_confidence"))
 	assert_true(config.get_economy().has("coins_per_success"))
 	for mode: String in ConfigScript.MODES:
 		assert_eq(config.get_store_catalog(mode).get("mode"), mode)

@@ -290,6 +290,15 @@ def validate_simple_config(rep: Report) -> None:
         for key in ("coins_per_success", "fast_bonus", "perfect_level_bonus", "daily_challenge_bonus",
                     "streak_freeze_every_days", "max_streak_freezes"):
             number(e, key, w, rep, 0, 100000)
+    tracker_path = CONTENT / "config" / "tracker.json"
+    t = load(tracker_path, rep)
+    if t is not None:
+        w = str(tracker_path.relative_to(ROOT))
+        check_version(t, w, rep)
+        number(t, "min_confidence", w, rep, 0.5, 1)
+        hold = number(t, "hold_frames", w, rep, 1, 30)
+        if hold is not None and not isinstance(hold, int):
+            rep.error(w, "'hold_frames' must be a whole number")
 
 
 def main() -> int:

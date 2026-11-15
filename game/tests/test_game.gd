@@ -51,6 +51,18 @@ func test_every_documented_method_exists_with_the_same_signature() -> void:
 		)
 
 
+func test_tracker_status_comes_from_the_tracker_client() -> void:
+	Clock.set_fake_time(100.0)
+	assert_eq(Game.get_tracker_status(), TrackerClient.get_status())
+	TrackerClient.handle_message({"v": 1, "type": "hello"})
+	assert_eq(Game.get_tracker_status(), "connected")
+	# Leave the shared autoload disconnected again for the other tests.
+	Clock.advance(TrackerClient.SILENCE_SECONDS)
+	TrackerClient.tick()
+	assert_eq(Game.get_tracker_status(), "disconnected")
+	Clock.clear_fake_time()
+
+
 func test_game_has_no_undocumented_public_methods() -> void:
 	for method_name: String in _declared:
 		assert_true(

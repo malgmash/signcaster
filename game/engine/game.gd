@@ -51,6 +51,12 @@ func set_paused(paused: bool) -> void:
 	ChallengeManager.set_paused(paused)
 
 
+## The tracker's status right now: "connected", "no_hand" or "disconnected".
+## Skins call it once when they open; tracker_status_changed tells them about later changes.
+func get_tracker_status() -> String:
+	return TrackerClient.get_status()
+
+
 ## Buys a store item.
 func buy_item(item_id: String) -> void:
 	Store.buy(item_id)

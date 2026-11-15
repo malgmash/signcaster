@@ -68,6 +68,8 @@ signal streak_updated(days: int, freezes: int)
 
 ## "connected", "no_hand" or "disconnected".
 signal tracker_status_changed(status: String)
+## Any message from the tracker arrived (for the debug skin). [param detail] explains problems.
+signal tracker_message_received(message_type: String, detail: String)
 ## Sign it challenges are being converted to Read it.
 signal sign_it_unavailable(reason: String)
 ## Rubber-banding changed a knob (for the debug overlay).
