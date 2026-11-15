@@ -46,8 +46,9 @@ The heartbeat is half the game's 2 second silence limit, so one late packet neve
 { "v": 1, "type": "letter", "t": 1731430000.456, "letter": "B", "confidence": 0.93, "hold_frames": 6 }
 ```
 
-- Sent once per accepted letter. The tracker will not send the same letter again until the hand changes shape or leaves the frame for at least `release_frames` (default 4).
+- Sent once per accepted letter. The tracker will not send the same letter again until it sees another letter or no hand for `release_frames` frames in a row (from `config`, default 4).
 - Letters are uppercase A to Z.
+- Double letters (the OO in MOON) are not detected yet: the shape does not change, so the release rule never fires. Planned for M6.
 
 ### status (when something changes)
 
@@ -59,14 +60,17 @@ The heartbeat is half the game's 2 second silence limit, so one late packet neve
 
 - While a problem lasts, the tracker repeats its `status` just before each `hello`, so a game that starts later still learns about it, and never shows "connected" for a moment first.
 - The game treats any status other than `"ok"` as `"disconnected"`: the tracker is alive, but Sign it cannot work.
+- `model_missing` covers both model files: the MediaPipe hand model and the trained letter model (`models/letters.npz`). Without a letter model the camera still runs, so `--show` can check the hand dots, but no letters are sent.
 
 ## Game to tracker
 
 ### config (on connect and when settings change)
 
 ```json
-{ "v": 1, "type": "config", "mirror": false, "debug_landmarks": false, "min_confidence": 0.8, "hold_frames": 6 }
+{ "v": 1, "type": "config", "mirror": false, "debug_landmarks": false, "min_confidence": 0.8, "hold_frames": 6, "release_frames": 4 }
 ```
+
+A field with a bad value (text where a number belongs, `null`, NaN) is ignored and the tracker keeps its current value.
 
 ### expect (optional hint when a Sign it challenge goes live)
 
@@ -76,6 +80,8 @@ The heartbeat is half the game's 2 second silence limit, so one late packet neve
 
 The tracker may use this only to break ties between look-alike letters. It must still report what it sees,
 never what it expects.
+
+The exact rule (`pick` in `signtracker/classifier.py`): the hint swaps the top two guesses only when they are within 0.10 of each other, the second one is in `letters` and the first one is not. The answer is always one of the top two, and the reported confidence is that letter's own probability. A new `expect` also resets the smoother, so a word can start with the letter the last word ended on.
 
 ### idle (when no Sign it challenge is live)
 
@@ -99,11 +105,11 @@ The game sends this every second while it runs. A tracker started with `--exit-w
 
 1. Capture a webcam frame (target 30 fps).
 2. Hand landmarks: MediaPipe Hand Landmarker (21 points). On the Mac, an Apple Vision helper can replace this step later.
-3. Normalize: translate so the wrist is the origin, scale by palm size, mirror if the player signs left-handed.
-4. Features: the normalized points plus angles between finger joints.
-5. Classify: a small model gives a probability for each letter. J and Z need motion, so they use a short window of frames.
-6. Smooth: accept a letter only when the same top letter holds for `hold_frames` frames with confidence at least `min_confidence`.
-7. Send a `letter` message.
+3. Normalize (`features.py`): undo the frame's aspect ratio, translate so the wrist is the origin, scale by palm size, mirror if the player signs left-handed.
+4. Features: the 63 normalized coordinates plus 15 finger joint bend angles.
+5. Classify (`classifier.py`): logistic regression weights from `models/letters.npz` give a probability for each letter, then the `expect` tie rule. J and Z need motion, so they will use a short window of frames later.
+6. Smooth (`smoothing.py`): accept a letter only when the same top letter holds for `hold_frames` frames with confidence at least `min_confidence`, then block it until `release_frames`.
+7. Send a `letter` message and print it in the tracker console.
 
 ## Fake tracker
 

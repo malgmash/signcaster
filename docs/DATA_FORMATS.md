@@ -152,12 +152,46 @@ Items never carry gameplay stats. The validator rejects keys like `speed`, `time
 {
   "version": 1,
   "min_confidence": 0.8,
-  "hold_frames": 6
+  "hold_frames": 6,
+  "release_frames": 4
 }
 ```
 
 - How strict letter recognition is. `TrackerClient` sends these to the tracker in its `config` message (docs/TRACKER_PROTOCOL.md).
-- `min_confidence` is 0.5 to 1. `hold_frames` is a whole number from 1 to 30: how many frames in a row the same letter must hold.
+- `min_confidence` is 0.5 to 1.
+- `hold_frames` is a whole number from 1 to 30: how many frames in a row the same letter must hold.
+- `release_frames` is a whole number from 1 to 30: after a letter is accepted, how many frames in a row of another letter or no hand before that same letter can count again.
+
+## Recorded letter samples (`tracker/data/<signer>/<letter>.npz`)
+
+Made by `tracker/tools/record.py`, read by `tracker/tools/train.py`. Gitignored and never shared: they come from real people.
+
+| Key | Type | Meaning |
+| --- | --- | --- |
+| `format_version` | int | 1 |
+| `letter` | text | One static letter, A to Y without J (J and Z need motion) |
+| `signing_hand` | text | `"right"` or `"left"`. Training mirrors left-handed samples |
+| `points` | float32, N x 21 x 3 | Hand landmarks per sample, x and y from 0 to 1 across the frame. Never images |
+| `aspect` | float32, N | Frame width / height for each sample |
+| `take` | int32, N | Which take each sample came from, counting from 1 |
+
+- `<signer>` is a nickname (2 to 20 characters of a to z, 0 to 9, `_`), never a real name.
+- Files are numpy `.npz` archives read with `allow_pickle=False`, so they can hold numbers and text only.
+
+## Letter model (`tracker/models/letters.npz`)
+
+Made by `tracker/tools/train.py`, read by `tracker/signtracker/classifier.py`. Gitignored for now; M12 commits it (ADR 0006).
+
+| Key | Meaning |
+| --- | --- |
+| `format_version` | 1 |
+| `feature_version` | Must match `FEATURE_VERSION` in `features.py`, or the tracker refuses the model |
+| `letters` | The letters the model knows, in output order |
+| `mean`, `scale` | Per feature, from scikit-learn's StandardScaler |
+| `coef`, `intercept` | Logistic regression weights: letters x 78 and one per letter |
+| `sample_count`, `signer_count` | How much data trained it. No signer names |
+
+Plain numbers only, so loading it can never run code, and the tracker needs numpy but not scikit-learn.
 
 ## Save file (`user://save.json`)
 

@@ -62,6 +62,8 @@ Run these from the repo root. If a command does not exist yet, say so instead of
 | Tracker lint | `cd tracker && ruff check .` |
 | Run the tracker | `cd tracker && python -m signtracker` |
 | Fake tracker (no webcam) | `cd tracker && python -m signtracker.fake --word BLUE` |
+| Record letter samples (webcam, a person signing) | `cd tracker && python tools/record.py --signer <nickname> --letters ADGMO` |
+| Train the letter model | `cd tracker && python tools/train.py` |
 
 The Godot executable may be named `godot`, `godot4` or a full path on each laptop. Ask if it is not on PATH.
 
