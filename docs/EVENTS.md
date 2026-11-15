@@ -14,7 +14,7 @@ Rules:
 | Signal | Arguments | Emitted when |
 | --- | --- | --- |
 | `session_started` | `mode: String, skin_id: String` | A mode is chosen from the main menu |
-| `level_started` | `level_id: String, level_index: int, is_boss: bool` | A play or wave group begins (`level_index` starts at 0) |
+| `level_started` | `level_id: String, level_index: int, is_boss: bool` | A level begins, a QB drive or a Wizard path (`level_index` starts at 0) |
 | `level_completed` | `level_id: String, stars: int, coins_earned: int, perfect: bool` | All challenges in the level are done |
 | `session_ended` | `reason: String` | Player quits to menu (`"quit"`) or closes the game (`"exit"`) |
 
@@ -70,6 +70,8 @@ Rules:
     "bubble_style": "stay",       # "stay", "fade" or "flash"
     "is_review": false,           # true if picked by spaced repetition
     "twist": "",                  # "", "audible" or "decoy"
+    "index_in_level": 1,          # position in the level, starts at 0 (a retry keeps it)
+    "level_size": 4,              # challenges in this level (6 for a boss)
 }
 ```
 

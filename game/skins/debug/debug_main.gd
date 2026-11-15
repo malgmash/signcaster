@@ -5,6 +5,7 @@ extends Control
 ## so it works out what to show (including the state label) from the signals alone.
 
 const SignCardScene: PackedScene = preload("res://ui/sign_card.tscn")
+const MENU_SCENE: String = "res://skins/menu/main_menu.tscn"
 ## The debug skin only plays the first group for now. Real skins get level ids from the menu.
 const LEVEL_ID_FORMAT: String = "%s.group_1.%d"
 const READ_IT: String = "read_it"
@@ -17,6 +18,7 @@ var _session_mode: String = ""
 var _challenge: Dictionary = {}
 var _typed: String = ""
 var _state: String = ""
+var _engine_signals: Dictionary = {}
 
 @onready var _mode_picker: OptionButton = %ModePicker
 @onready var _level_picker: SpinBox = %LevelPicker
@@ -42,20 +44,31 @@ func _ready() -> void:
 
 
 func _connect_engine() -> void:
-	EventBus.session_started.connect(_on_session_started)
-	EventBus.level_started.connect(_on_level_started)
-	EventBus.level_completed.connect(_on_level_completed)
-	EventBus.challenge_created.connect(_on_challenge_created)
-	EventBus.study_started.connect(_on_study_started)
-	EventBus.live_started.connect(_on_live_started)
-	EventBus.timer_ticked.connect(_on_timer_ticked)
-	EventBus.letter_accepted.connect(_on_letter_accepted)
-	EventBus.letter_rejected.connect(_on_letter_rejected)
-	EventBus.letter_removed.connect(_on_letter_removed)
-	EventBus.challenge_succeeded.connect(_on_challenge_succeeded)
-	EventBus.challenge_failed.connect(_on_challenge_failed)
-	EventBus.retry_offered.connect(_on_retry_offered)
-	EventBus.paused_changed.connect(_on_paused_changed)
+	_engine_signals = {
+		EventBus.session_started: _on_session_started,
+		EventBus.level_started: _on_level_started,
+		EventBus.level_completed: _on_level_completed,
+		EventBus.challenge_created: _on_challenge_created,
+		EventBus.study_started: _on_study_started,
+		EventBus.live_started: _on_live_started,
+		EventBus.timer_ticked: _on_timer_ticked,
+		EventBus.letter_accepted: _on_letter_accepted,
+		EventBus.letter_rejected: _on_letter_rejected,
+		EventBus.letter_removed: _on_letter_removed,
+		EventBus.challenge_succeeded: _on_challenge_succeeded,
+		EventBus.challenge_failed: _on_challenge_failed,
+		EventBus.retry_offered: _on_retry_offered,
+		EventBus.paused_changed: _on_paused_changed,
+	}
+	for engine_signal: Signal in _engine_signals:
+		engine_signal.connect(_engine_signals[engine_signal])
+
+
+func _exit_tree() -> void:
+	for engine_signal: Signal in _engine_signals:
+		if engine_signal.is_connected(_engine_signals[engine_signal]):
+			engine_signal.disconnect(_engine_signals[engine_signal])
+	Game.set_paused(false)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -64,7 +77,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	# unicode is the character the keyboard layout produced, so non-QWERTY keyboards work too.
 	var typed: String = char(key.unicode).to_upper() if key.unicode > 0 else ""
-	if key.keycode == KEY_BACKSPACE:
+	if key.keycode == KEY_F9:
+		get_tree().change_scene_to_file(MENU_SCENE)
+	elif key.keycode == KEY_BACKSPACE:
 		Game.delete_typed_letter()
 	elif typed.length() == 1 and typed >= "A" and typed <= "Z":
 		Game.submit_typed_letter(typed)
@@ -105,7 +120,17 @@ func _on_level_completed(level_id: String, stars: int, coins: int, _perfect: boo
 
 func _on_challenge_created(challenge: Dictionary) -> void:
 	_challenge = challenge
-	_show_event("Challenge %s: %s" % [challenge["id"], challenge["direction"]])
+	_show_event(
+		(
+			"Challenge %s (%d of %d): %s"
+			% [
+				challenge["id"],
+				int(challenge["index_in_level"]) + 1,
+				int(challenge["level_size"]),
+				challenge["direction"],
+			]
+		)
+	)
 
 
 func _on_study_started(_challenge_id: String, seconds: float) -> void:

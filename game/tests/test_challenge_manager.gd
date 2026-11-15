@@ -21,6 +21,8 @@ const CHALLENGE_KEYS: PackedStringArray = [
 	"bubble_style",
 	"is_review",
 	"twist",
+	"index_in_level",
+	"level_size",
 ]
 
 var _cm: Node
@@ -110,6 +112,8 @@ func test_challenge_has_every_documented_key() -> void:
 	assert_eq(challenge["live_seconds"], 12.0)
 	assert_eq(challenge["bubble_style"], "stay")
 	assert_eq(challenge["twist"], "")
+	assert_eq(challenge["index_in_level"], 0)
+	assert_eq(challenge["level_size"], 4)
 	assert_eq(str(challenge["word"]).length(), 3, "t1 uses 3-letter words")
 
 
@@ -372,6 +376,8 @@ func test_a_full_level_ends_with_level_completed() -> void:
 		_type(_word())
 		_cm.next_challenge()
 	assert_eq(words.size(), 4, "No word repeats inside a level")
+	assert_eq(_cm.get_challenge()["index_in_level"], 3, "The last of 4 has index 3")
+	assert_eq(_cm.get_challenge()["level_size"], 4)
 	assert_signal_emit_count(EventBus, "challenge_succeeded", 4)
 	assert_signal_emitted_with_parameters(EventBus, "level_completed", [QB_LEVEL, 0, 0, false])
 	assert_eq(_cm.get_state(), "level_done")

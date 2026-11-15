@@ -112,7 +112,7 @@ Items never carry gameplay stats. The validator rejects keys like `speed`, `time
 }
 ```
 
-- Level ids are built as `<mode>.<group id>.<index>`, for example `qb.group_1.4`. Skins rename groups for display (drive, path).
+- Level ids are built as `<mode>.<group id>.<index>`, for example `qb.group_1.4`. Skins rename levels and groups for display (QB: drive and season, Wizard: path and world).
 - `bubble_style` in a tier overrides the mode default. `null` means use the mode default.
 - `directions` lists what the tier may pick from. The engine converts `sign_it` to `read_it` when the tracker is unavailable.
 - `timer_scale` multiplies `live_seconds` for the whole mode (kids get more time).

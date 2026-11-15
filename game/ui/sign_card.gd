@@ -16,6 +16,12 @@ extends PanelContainer
 		texture = value
 		_refresh()
 
+## Off when the letter would give away the answer (Read it, inside the memory bubble).
+@export var show_letter: bool = true:
+	set(value):
+		show_letter = value
+		_refresh()
+
 @onready var _art: TextureRect = $Art
 @onready var _placeholder: Label = $Placeholder
 @onready var _corner: Label = $Corner
@@ -30,4 +36,4 @@ func _refresh() -> void:
 		return
 	_art.texture = texture
 	_placeholder.visible = texture == null
-	_corner.text = letter
+	_corner.text = letter if show_letter else ""
