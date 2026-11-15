@@ -18,6 +18,8 @@ const FLASH_HIDE_SECONDS: float = 0.15
 @export var card_size: Vector2 = Vector2(56, 70)
 
 var _tween: Tween = null
+# True between show_* and hide_bubble(), so un-pausing only brings back a bubble that was up.
+var _shown: bool = false
 
 @onready var _word: Label = $Content/Word
 @onready var _signs: HBoxContainer = $Content/Signs
@@ -62,12 +64,24 @@ func set_style(style: String) -> void:
 ## Hides the bubble right away.
 func hide_bubble() -> void:
 	_stop_tween()
+	_shown = false
 	visible = false
+
+
+## While paused the bubble is hidden and its fade stops, so a pause is never extra study time.
+func set_paused(paused: bool) -> void:
+	if _tween != null and _tween.is_valid():
+		if paused:
+			_tween.pause()
+		else:
+			_tween.play()
+	visible = _shown and not paused
 
 
 func _appear() -> void:
 	_stop_tween()
 	modulate.a = 1.0
+	_shown = true
 	visible = true
 
 
@@ -79,4 +93,5 @@ func _stop_tween() -> void:
 
 func _clear_signs() -> void:
 	for card: Node in _signs.get_children():
+		_signs.remove_child(card)
 		card.queue_free()

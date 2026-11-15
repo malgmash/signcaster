@@ -24,7 +24,9 @@ var _shake: Tween = null
 
 ## Builds [param length] empty slots.
 func setup(length: int) -> void:
+	# Remove first, so old slots never sit next to new ones for a frame.
 	for child: Node in get_children():
+		remove_child(child)
 		child.queue_free()
 	_slots.clear()
 	for _i: int in range(length):

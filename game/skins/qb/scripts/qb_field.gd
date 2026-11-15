@@ -5,6 +5,7 @@ extends Node2D
 ## Rush progress goes from 0.0 (snap) to 1.0 (time is up, the defense reaches the QB).
 
 const PlayerToken = preload("res://skins/qb/scripts/player_token.gd")
+const QbPalette = preload("res://skins/qb/scripts/qb_palette.gd")
 
 const FIELD_SIZE: Vector2 = Vector2(1280, 720)
 const END_ZONE_BOTTOM: float = 110.0
@@ -21,11 +22,10 @@ const END_ZONE_COLOR: Color = Color(0.1, 0.32, 0.16)
 const LINE_COLOR: Color = Color(1, 1, 1, 0.55)
 const SCRIMMAGE_COLOR: Color = Color(0.35, 0.6, 1.0, 0.8)
 
-# Our team (invented): green with white trim. The defense (invented): blue with silver trim.
-const OFFENSE_COLOR: Color = Color(0.05, 0.62, 0.33)
-const OFFENSE_TRIM: Color = Color(0.97, 0.97, 0.97)
-const DEFENSE_COLOR: Color = Color(0.18, 0.38, 0.72)
-const DEFENSE_TRIM: Color = Color(0.78, 0.8, 0.85)
+const OFFENSE_COLOR: Color = QbPalette.OFFENSE_COLOR
+const OFFENSE_TRIM: Color = QbPalette.OFFENSE_TRIM
+const DEFENSE_COLOR: Color = QbPalette.DEFENSE_COLOR
+const DEFENSE_TRIM: Color = QbPalette.DEFENSE_TRIM
 
 const QB_SPOT: Vector2 = Vector2(640, 610)
 const QB_NUMBER: int = 7

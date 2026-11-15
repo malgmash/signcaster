@@ -8,14 +8,13 @@ signal ready_pressed
 
 const PlayCall = preload("res://skins/qb/scripts/play_call.gd")
 const PlayerToken = preload("res://skins/qb/scripts/player_token.gd")
+const QbPalette = preload("res://skins/qb/scripts/qb_palette.gd")
 const SignCardScene: PackedScene = preload("res://ui/sign_card.tscn")
 
 const RING_PLAYERS: int = 7
 const RING_RADIUS: float = 95.0
 ## The first number is the QB, at the top of the ring.
 const RING_NUMBERS: Array[int] = [7, 72, 65, 50, 61, 77, 88]
-const RING_COLOR: Color = Color(0.05, 0.62, 0.33)
-const RING_TRIM: Color = Color(0.97, 0.97, 0.97)
 const FADE_IN_SECONDS: float = 0.25
 
 var _study_tween: Tween = null
@@ -31,8 +30,8 @@ func _ready() -> void:
 	%ReadyButton.pressed.connect(ready_pressed.emit)
 	for i: int in range(RING_PLAYERS):
 		var token: Node2D = PlayerToken.new()
-		token.jersey_color = RING_COLOR
-		token.trim_color = RING_TRIM
+		token.jersey_color = QbPalette.OFFENSE_COLOR
+		token.trim_color = QbPalette.OFFENSE_TRIM
 		token.number = RING_NUMBERS[i]
 		token.position = Vector2.from_angle(TAU * i / RING_PLAYERS - PI / 2.0) * RING_RADIUS
 		_ring.add_child(token)
@@ -52,6 +51,16 @@ func show_huddle(word: String, seconds: float) -> void:
 	visible = true
 	modulate.a = 0.0
 	create_tween().tween_property(self, "modulate:a", 1.0, FADE_IN_SECONDS)
+
+
+## Freezes or resumes the study bar, so it stays in step with the engine's study timer.
+func set_paused(paused: bool) -> void:
+	if _study_tween == null or not _study_tween.is_valid():
+		return
+	if paused:
+		_study_tween.pause()
+	else:
+		_study_tween.play()
 
 
 ## Hides the huddle.

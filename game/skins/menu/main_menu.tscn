@@ -93,5 +93,5 @@ grow_horizontal = 2
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
 theme_override_font_sizes/font_size = 16
-text = "Your camera stays on your computer. Nothing is saved or sent."
+text = "Your camera stays on your computer. Video is never saved or sent."
 horizontal_alignment = 1

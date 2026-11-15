@@ -78,7 +78,10 @@ func _connect_views() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	var mouse: InputEventMouseButton = event as InputEventMouseButton
-	if mouse != null and mouse.pressed and _auto_next_pending:
+	var left_click: bool = (
+		mouse != null and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT
+	)
+	if left_click and _auto_next_pending:
 		_auto_next()
 		return
 	var key: InputEventKey = event as InputEventKey
@@ -253,3 +256,5 @@ func _on_level_completed(_level_id: String, _stars: int, _coins: int, _perfect: 
 func _on_paused_changed(paused: bool) -> void:
 	_paused = paused
 	_pause_overlay.visible = paused
+	_huddle.set_paused(paused)
+	_bubble.set_paused(paused)
