@@ -19,6 +19,9 @@ var _challenge: Dictionary = {}
 var _typed: String = ""
 var _state: String = ""
 var _engine_signals: Dictionary = {}
+var _tracker_status: String = "disconnected"
+var _tracker_last: String = "none"
+var _tracker_detail: String = ""
 
 @onready var _mode_picker: OptionButton = %ModePicker
 @onready var _level_picker: SpinBox = %LevelPicker
@@ -31,6 +34,7 @@ var _engine_signals: Dictionary = {}
 @onready var _time_label: Label = %TimeLabel
 @onready var _result_label: Label = %ResultLabel
 @onready var _event_label: Label = %EventLabel
+@onready var _tracker_label: Label = %TrackerLabel
 
 
 func _ready() -> void:
@@ -59,6 +63,8 @@ func _connect_engine() -> void:
 		EventBus.challenge_failed: _on_challenge_failed,
 		EventBus.retry_offered: _on_retry_offered,
 		EventBus.paused_changed: _on_paused_changed,
+		EventBus.tracker_status_changed: _on_tracker_status_changed,
+		EventBus.tracker_message_received: _on_tracker_message_received,
 	}
 	for engine_signal: Signal in _engine_signals:
 		engine_signal.connect(_engine_signals[engine_signal])
@@ -203,7 +209,26 @@ func _on_paused_changed(paused: bool) -> void:
 	_refresh_state_label(paused)
 
 
+func _on_tracker_status_changed(status: String) -> void:
+	_tracker_status = status
+	if status == "disconnected":
+		_tracker_detail = ""
+	_refresh_tracker()
+
+
+func _on_tracker_message_received(message_type: String, detail: String) -> void:
+	_tracker_last = message_type
+	if message_type == "status":
+		_tracker_detail = detail
+	_refresh_tracker()
+
+
 # Drawing
+
+
+func _refresh_tracker() -> void:
+	var problem: String = "" if _tracker_detail.is_empty() else ", %s" % _tracker_detail
+	_tracker_label.text = "Tracker: %s (last: %s%s)" % [_tracker_status, _tracker_last, problem]
 
 
 func _build_cards() -> void:

@@ -12,6 +12,7 @@ const MODES: PackedStringArray = ["qb", "wizard"]
 var _difficulty: Dictionary = {}
 var _scoring: Dictionary = {}
 var _economy: Dictionary = {}
+var _tracker: Dictionary = {}
 var _catalogs: Dictionary = {}
 var _word_packs: Array[Dictionary] = []
 var _load_errors: PackedStringArray = []
@@ -27,6 +28,7 @@ func load_from(content_dir: String) -> bool:
 	_difficulty = _load_json(content_dir.path_join("config/difficulty.json"))
 	_scoring = _load_json(content_dir.path_join("config/scoring.json"))
 	_economy = _load_json(content_dir.path_join("config/economy.json"))
+	_tracker = _load_json(content_dir.path_join("config/tracker.json"))
 	_catalogs = {}
 	for mode: String in MODES:
 		_catalogs[mode] = _load_json(content_dir.path_join("store/%s_catalog.json" % mode))
@@ -47,6 +49,11 @@ func get_scoring() -> Dictionary:
 ## The economy config: coin rewards and streak freezes.
 func get_economy() -> Dictionary:
 	return _economy
+
+
+## The tracker config: how strict letter recognition is (sent to the tracker in config).
+func get_tracker() -> Dictionary:
+	return _tracker
 
 
 ## Every word pack, sorted by file name.

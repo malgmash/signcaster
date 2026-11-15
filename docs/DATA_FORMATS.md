@@ -15,6 +15,7 @@ game/content/
   config/difficulty.json
   config/scoring.json
   config/economy.json
+  config/tracker.json
 ```
 
 ## Word pack (`word_packs/*.json`)
@@ -144,6 +145,19 @@ Items never carry gameplay stats. The validator rejects keys like `speed`, `time
   "max_streak_freezes": 2
 }
 ```
+
+## Tracker config (`config/tracker.json`)
+
+```json
+{
+  "version": 1,
+  "min_confidence": 0.8,
+  "hold_frames": 6
+}
+```
+
+- How strict letter recognition is. `TrackerClient` sends these to the tracker in its `config` message (docs/TRACKER_PROTOCOL.md).
+- `min_confidence` is 0.5 to 1. `hold_frames` is a whole number from 1 to 30: how many frames in a row the same letter must hold.
 
 ## Save file (`user://save.json`)
 

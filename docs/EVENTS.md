@@ -51,7 +51,8 @@ Rules:
 
 | Signal | Arguments | Emitted when |
 | --- | --- | --- |
-| `tracker_status_changed` | `status: String` | `"connected"`, `"no_hand"`, `"disconnected"` |
+| `tracker_status_changed` | `status: String` | `"connected"`, `"no_hand"`, `"disconnected"` (also while the tracker reports a problem such as `no_camera`) |
+| `tracker_message_received` | `message_type: String, detail: String` | Any tracker message arrived. `detail` is set for `status` messages, like `"no_camera: Camera index 0 could not be opened"`. For debug views |
 | `sign_it_unavailable` | `reason: String` | Sign it challenges are being converted to Read it |
 | `difficulty_adjusted` | `knob: String, value: float` | Rubber-banding changes a knob (for debug overlay) |
 | `paused_changed` | `paused: bool` | Game paused or resumed |
