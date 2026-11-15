@@ -15,7 +15,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Only tools/train.py needs scikit-learn. The tracker itself predicts with numpy from
+# models/letters.npz, so players never need it (and the M12 download stays small).
+train = [
+  "scikit-learn",
+]
 dev = [
+  "signtracker[train]",
   "pytest",
   "ruff",
 ]

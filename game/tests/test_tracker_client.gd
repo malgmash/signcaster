@@ -172,6 +172,7 @@ func test_config_comes_from_tracker_json() -> void:
 	assert_eq(config.get("type"), "config")
 	assert_eq(config.get("min_confidence"), float(Config.get_tracker()["min_confidence"]))
 	assert_eq(config.get("hold_frames"), int(Config.get_tracker()["hold_frames"]))
+	assert_eq(config.get("release_frames"), int(Config.get_tracker()["release_frames"]))
 	assert_false(config.get("mirror"))
 
 

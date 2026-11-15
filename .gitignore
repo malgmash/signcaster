@@ -26,6 +26,7 @@ venv/
 # Tracker models and recorded data (large, personal)
 tracker/models/*.task
 tracker/models/*.joblib
+tracker/models/*.npz
 tracker/data/
 
 # Local settings and secrets

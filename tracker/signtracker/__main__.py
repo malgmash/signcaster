@@ -1,9 +1,9 @@
 """The hand tracker: `python -m signtracker [--show] [--camera N] [--exit-when-orphaned]`.
 
-Reads the webcam, finds a hand with MediaPipe and tells the game over localhost UDP.
+Reads the webcam, finds a hand with MediaPipe, reads the letter with the model trained by
+tools/train.py, and tells the game over localhost UDP.
 Frames never leave this process: nothing is saved to disk and only small JSON messages
-(status, hand presence, optional landmarks) are sent, to 127.0.0.1 only.
-Letters come in M5.
+(status, hand presence, letters, optional landmarks) are sent, to 127.0.0.1 only.
 """
 
 from __future__ import annotations
@@ -17,8 +17,11 @@ from typing import Any
 
 from signtracker import __version__, protocol
 from signtracker.capture import Camera
+from signtracker.classifier import BadLetterModel, LetterModel, LetterModelMissing, pick
+from signtracker.features import BadHand, feature_vector
 from signtracker.landmarks import Hand, HandFinder, ModelMissing
 from signtracker.pacing import Every, OrphanWatch, RateLimiter
+from signtracker.smoothing import Smoother
 
 TRACKER_NAME = "mediapipe"
 # Half the game's 2 s silence limit, so one late packet never looks like a disconnect.
@@ -33,7 +36,10 @@ WAIT_SECONDS = 0.05
 PREVIEW_WINDOW = "Signcaster tracker (preview only, nothing is saved)"
 PREVIEW_DOT_RADIUS = 4
 PREVIEW_DOT_COLOR = (80, 220, 120)
+PREVIEW_TEXT_COLOR = (255, 255, 255)
 QUIT_KEYS = (ord("q"), 27)
+HAND_MODEL_DETAIL = "hand_landmarker.task is missing, see the tracker console"
+LETTER_MODEL_DETAIL = "letter model missing or out of date, see tracker/README.md"
 
 
 @dataclass
@@ -44,6 +50,7 @@ class Settings:
     debug_landmarks: bool = False
     min_confidence: float = 0.8
     hold_frames: int = 6
+    release_frames: int = 4
     idle: bool = False
     expected: str = ""
 
@@ -71,6 +78,7 @@ def handle_control(msg: protocol.Message, settings: Settings, orphan: OrphanWatc
         settings.debug_landmarks = _flag(msg, "debug_landmarks", settings.debug_landmarks)
         settings.min_confidence = _number(msg, "min_confidence", settings.min_confidence)
         settings.hold_frames = int(_number(msg, "hold_frames", settings.hold_frames))
+        settings.release_frames = int(_number(msg, "release_frames", settings.release_frames))
     elif kind == "expect":
         settings.idle = False
         settings.expected = str(msg.get("letters", "")).upper()
@@ -109,6 +117,7 @@ class Tracker:
         receiver: protocol.Receiver | None = None,
         camera: Camera | None = None,
         make_finder: Callable[[], HandFinder] = HandFinder,
+        make_model: Callable[[], LetterModel] = LetterModel.load,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.args = args
@@ -128,12 +137,32 @@ class Tracker:
         self.frames = 0
         self.fps = 0
         self.fps_since = now
+        # A missing model is a problem that stays, even when the camera comes back.
+        self.base_problem: tuple[str, str] | None = None
         self.finder: HandFinder | None = None
         try:
             self.finder = make_finder()
         except ModelMissing as missing:
             print(missing)
-            self.set_problem("model_missing", "hand_landmarker.task is missing, see the tracker console")
+            self.base_problem = ("model_missing", HAND_MODEL_DETAIL)
+        self.model: LetterModel | None = None
+        try:
+            self.model = make_model()
+        except (LetterModelMissing, BadLetterModel) as problem:
+            # The camera still runs, so --show can check the hand dots before any training.
+            print(problem)
+            self.base_problem = self.base_problem or ("model_missing", LETTER_MODEL_DETAIL)
+        self.smoother = Smoother(self.settings.hold_frames, self.settings.min_confidence, self.settings.release_frames)
+        self.top: tuple[str, float] | None = None  # this frame's best guess, for the preview
+        if self.base_problem is not None:
+            self.set_problem(*self.base_problem)
+
+    def clear_camera_problem(self) -> None:
+        """The camera works again: back to ok, or to a model problem if there is one."""
+        if self.base_problem is not None:
+            self.set_problem(*self.base_problem)
+        else:
+            self.set_problem(None)
 
     def set_problem(self, value: str | None, detail: str = "") -> None:
         new = (value, detail) if value else None
@@ -158,6 +187,10 @@ class Tracker:
         started = self.clock()
         for msg in self.receiver.poll():
             handle_control(msg, self.settings, self.orphan, started)
+            if msg.get("type") == "expect":
+                self.smoother.reset()  # a new word starts fresh
+        s = self.settings
+        self.smoother.set_params(s.hold_frames, s.min_confidence, s.release_frames)
         if self.orphan is not None and self.orphan.orphaned(started):
             print(f"No ping from the game for {ORPHAN_SECONDS:.0f} s, exiting so the camera turns off.")
             return False
@@ -169,6 +202,7 @@ class Tracker:
             return True
         hand = self.finder.find(frame, int(started * 1000)) if self.finder else None
         self.report(hand)
+        self.read_letter(hand)
         if self.args.show and not self.preview(frame, hand):
             return False
         self.frames += 1
@@ -199,7 +233,7 @@ class Tracker:
             if not self.camera.open():
                 self.set_problem("no_camera", f"Camera index {self.args.camera} could not be opened")
                 return None
-            self.set_problem(None)
+            self.clear_camera_problem()
         return self.camera.read()
 
     def report(self, hand: Hand | None) -> None:
@@ -212,8 +246,30 @@ class Tracker:
             points = hand.points if self.settings.debug_landmarks else None
             self.sender.send(protocol.hand_present(time.time(), hand.handedness, points))
 
+    def read_letter(self, hand: Hand | None) -> None:
+        """Model guess, expect hint, smoother. Sends a letter message when one is accepted."""
+        if self.model is None:
+            return
+        self.top = None
+        if hand is None:
+            self.smoother.update(None)
+            return
+        try:
+            features = feature_vector(hand.points, hand.aspect, self.settings.mirror)
+        except BadHand:
+            self.smoother.update(None)
+            return
+        probabilities = self.model.predict(features)
+        letter, confidence = pick(probabilities, self.model.letters, self.settings.expected)
+        self.top = (letter, confidence)
+        accepted = self.smoother.update(letter, confidence)
+        if accepted is None:
+            return
+        self.sender.send(protocol.letter(time.time(), accepted, round(confidence, 3), self.settings.hold_frames))
+        print(f"letter {accepted} {confidence:.2f}")
+
     def preview(self, frame: Any, hand: Hand | None) -> bool:
-        """Shows the frame with landmark dots. False when the player pressed Q or Esc."""
+        """Shows the frame with landmark dots and the current guess. False when the player pressed Q or Esc."""
         import cv2
 
         if hand is not None:
@@ -221,7 +277,16 @@ class Tracker:
             for x, y, _z in hand.points:
                 center = (int(x * width), int(y * height))
                 cv2.circle(frame, center, PREVIEW_DOT_RADIUS, PREVIEW_DOT_COLOR, -1)
-        cv2.imshow(PREVIEW_WINDOW, frame)
+        # Shown like a mirror. Only the picture is flipped; the points sent and read are not.
+        view = cv2.flip(frame, 1)
+        if self.model is None:
+            text = "No letter model yet (hand dots only)"
+        elif self.top is None:
+            text = "No hand"
+        else:
+            text = f"{self.top[0]}  {self.top[1]:.0%}"
+        cv2.putText(view, text, (16, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.0, PREVIEW_TEXT_COLOR, 2)
+        cv2.imshow(PREVIEW_WINDOW, view)
         return (cv2.waitKey(1) & 0xFF) not in QUIT_KEYS
 
     def close(self) -> None:

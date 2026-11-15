@@ -205,19 +205,22 @@ tracker/
     capture.py       webcam open, read, release
     landmarks.py     MediaPipe wrapper, returns 21 points or None
     features.py      normalize and feature vector (pure functions)
-    classifier.py    load model, predict letter probabilities
+    classifier.py    load letters.npz, predict letter probabilities with numpy, expect tie rule
     smoothing.py     hold and release logic (pure, heavily tested)
+    dataset.py       recorded sample files, signer splits, accuracy and confusion helpers
     protocol.py      message builders and parser, UDP sockets
     pacing.py        rate limits, heartbeat and orphan timer (pure, time passed in)
     fake.py          scripted letters for tests and demos
   tools/
     record.py        records landmark samples (never images) with a countdown and consent prompt
-    train.py         trains the letter classifier from recorded samples
-  models/            trained models and the MediaPipe .task file (gitignored)
+    train.py         trains the letter classifier from recorded samples, scored by held-out signer
+  data/              recorded samples, one folder per signer nickname (gitignored)
+  models/            hand_landmarker.task and letters.npz (gitignored until M12)
   tests/
 ```
 
 Recorded datasets store landmarks only, never video or images.
+The letter model is plain numbers (logistic regression weights), so the tracker predicts with numpy and needs scikit-learn only for training.
 
 ## Performance budgets
 
