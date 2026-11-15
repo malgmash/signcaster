@@ -1,5 +1,6 @@
 {
   "version": 1,
   "min_confidence": 0.8,
-  "hold_frames": 6
+  "hold_frames": 6,
+  "release_frames": 4
 }

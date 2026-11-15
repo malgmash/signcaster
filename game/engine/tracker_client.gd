@@ -134,6 +134,7 @@ func build_config() -> Dictionary:
 		"debug_landmarks": false,
 		"min_confidence": float(tuning.get("min_confidence", 0.0)),
 		"hold_frames": int(tuning.get("hold_frames", 0)),
+		"release_frames": int(tuning.get("release_frames", 0)),
 	}
 
 

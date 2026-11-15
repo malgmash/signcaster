@@ -296,9 +296,10 @@ def validate_simple_config(rep: Report) -> None:
         w = str(tracker_path.relative_to(ROOT))
         check_version(t, w, rep)
         number(t, "min_confidence", w, rep, 0.5, 1)
-        hold = number(t, "hold_frames", w, rep, 1, 30)
-        if hold is not None and not isinstance(hold, int):
-            rep.error(w, "'hold_frames' must be a whole number")
+        for key in ("hold_frames", "release_frames"):
+            frames = number(t, key, w, rep, 1, 30)
+            if frames is not None and not isinstance(frames, int):
+                rep.error(w, f"'{key}' must be a whole number")
 
 
 def main() -> int:
