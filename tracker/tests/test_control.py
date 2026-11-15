@@ -22,6 +22,23 @@ def test_config_keeps_fields_it_does_not_mention() -> None:
     assert settings.hold_frames == Settings().hold_frames
 
 
+def test_config_with_bad_values_keeps_the_current_settings() -> None:
+    settings = Settings()
+    bad = {
+        "v": 1,
+        "type": "config",
+        "mirror": "yes",
+        "debug_landmarks": 1,
+        "min_confidence": "abc",
+        "hold_frames": None,
+    }
+    handle_control(bad, settings, None, 0.0)
+    assert settings == Settings()
+    for value in (True, float("nan"), float("inf"), [0.9], {"x": 1}):
+        handle_control({"v": 1, "type": "config", "min_confidence": value}, settings, None, 0.0)
+        assert settings.min_confidence == Settings().min_confidence, value
+
+
 def test_expect_and_idle_switch_the_mode() -> None:
     settings = Settings()
     handle_control({"v": 1, "type": "expect", "challenge_id": "c_000001", "letters": "blue"}, settings, None, 0.0)

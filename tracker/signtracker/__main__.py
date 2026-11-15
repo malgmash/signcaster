@@ -9,7 +9,9 @@ Letters come in M5.
 from __future__ import annotations
 
 import argparse
+import math
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -46,14 +48,29 @@ class Settings:
     expected: str = ""
 
 
+def _flag(msg: protocol.Message, key: str, current: bool) -> bool:
+    """A true/false field, or `current` if it is missing or not a real JSON boolean."""
+    value = msg.get(key, current)
+    return value if isinstance(value, bool) else current
+
+
+def _number(msg: protocol.Message, key: str, current: float) -> float:
+    """A number field, or `current` if it is missing, not a number, or not finite."""
+    value = msg.get(key, current)
+    # bool is a subclass of int in Python, so true would otherwise count as 1.
+    if isinstance(value, bool) or not isinstance(value, int | float) or not math.isfinite(value):
+        return current
+    return float(value)
+
+
 def handle_control(msg: protocol.Message, settings: Settings, orphan: OrphanWatch | None, now: float) -> None:
-    """Applies one message from the game. Unknown fields are ignored."""
+    """Applies one message from the game. Unknown fields and bad values are ignored, never fatal."""
     kind = msg.get("type")
     if kind == "config":
-        settings.mirror = bool(msg.get("mirror", settings.mirror))
-        settings.debug_landmarks = bool(msg.get("debug_landmarks", settings.debug_landmarks))
-        settings.min_confidence = float(msg.get("min_confidence", settings.min_confidence))
-        settings.hold_frames = int(msg.get("hold_frames", settings.hold_frames))
+        settings.mirror = _flag(msg, "mirror", settings.mirror)
+        settings.debug_landmarks = _flag(msg, "debug_landmarks", settings.debug_landmarks)
+        settings.min_confidence = _number(msg, "min_confidence", settings.min_confidence)
+        settings.hold_frames = int(_number(msg, "hold_frames", settings.hold_frames))
     elif kind == "expect":
         settings.idle = False
         settings.expected = str(msg.get("letters", "")).upper()
@@ -79,19 +96,33 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 class Tracker:
-    """The camera loop. Kept thin: timing lives in pacing.py, messages in protocol.py."""
+    """The camera loop. Kept thin: timing lives in pacing.py, messages in protocol.py.
 
-    def __init__(self, args: argparse.Namespace) -> None:
+    The sockets, camera, hand finder and clock can be swapped for fakes, so tests run
+    the real loop logic with no network, camera or MediaPipe.
+    """
+
+    def __init__(
+        self,
+        args: argparse.Namespace,
+        sender: protocol.Sender | None = None,
+        receiver: protocol.Receiver | None = None,
+        camera: Camera | None = None,
+        make_finder: Callable[[], HandFinder] = HandFinder,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
         self.args = args
         self.settings = Settings()
-        self.sender = protocol.Sender(args.game_port)
-        self.receiver = protocol.Receiver(args.control_port)
-        self.camera = Camera(args.camera)
+        self.clock = clock
+        # The receiver first: if the port is taken, fail before loading the model.
+        self.receiver = receiver if receiver is not None else protocol.Receiver(args.control_port)
+        self.sender = sender if sender is not None else protocol.Sender(args.game_port)
+        self.camera = camera if camera is not None else Camera(args.camera)
         self.hello_timer = Every(HELLO_SECONDS)
         self.camera_retry = Every(CAMERA_RETRY_SECONDS)
         self.hand_limit = RateLimiter(HAND_PER_SECOND)
         self.no_hand_limit = RateLimiter(NO_HAND_PER_SECOND)
-        now = time.monotonic()
+        now = clock()
         self.orphan = OrphanWatch(ORPHAN_SECONDS, now) if args.exit_when_orphaned else None
         self.problem: tuple[str, str] | None = None
         self.frames = 0
@@ -99,7 +130,7 @@ class Tracker:
         self.fps_since = now
         self.finder: HandFinder | None = None
         try:
-            self.finder = HandFinder()
+            self.finder = make_finder()
         except ModelMissing as missing:
             print(missing)
             self.set_problem("model_missing", "hand_landmarker.task is missing, see the tracker console")
@@ -124,7 +155,7 @@ class Tracker:
 
     def step(self) -> bool:
         """One pass of the loop. False means stop."""
-        started = time.monotonic()
+        started = self.clock()
         for msg in self.receiver.poll():
             handle_control(msg, self.settings, self.orphan, started)
         if self.orphan is not None and self.orphan.orphaned(started):
@@ -142,7 +173,7 @@ class Tracker:
             return False
         self.frames += 1
         target = IDLE_FPS if self.settings.idle else ACTIVE_FPS
-        time.sleep(max(0.0, 1.0 / target - (time.monotonic() - started)))
+        time.sleep(max(0.0, 1.0 / target - (self.clock() - started)))
         return True
 
     def heartbeat(self, now: float) -> None:
@@ -172,7 +203,7 @@ class Tracker:
         return self.camera.read()
 
     def report(self, hand: Hand | None) -> None:
-        now = time.monotonic()
+        now = self.clock()
         if hand is None:
             if self.no_hand_limit.allow(now):
                 self.sender.send(protocol.hand_absent())
@@ -206,7 +237,16 @@ class Tracker:
 
 
 def main(argv: list[str] | None = None) -> int:
-    return Tracker(parse_args(argv)).run()
+    args = parse_args(argv)
+    try:
+        tracker = Tracker(args)
+    except OSError as error:
+        print(
+            f"Could not listen on {protocol.HOST}:{args.control_port} ({error}).\n"
+            "Is another tracker already running? Close it and try again."
+        )
+        return 1
+    return tracker.run()
 
 
 if __name__ == "__main__":
