@@ -31,6 +31,7 @@ class ModelMissing(RuntimeError):
 class Hand:
     handedness: str
     points: list[list[float]]  # 21 [x, y, z]; x and y are 0 to 1 across the frame
+    aspect: float = 1.0  # frame width / height, so features.py can undo the squash of 0 to 1
 
 
 class HandFinder:
@@ -65,7 +66,8 @@ class HandFinder:
             return None
         points = [[p.x, p.y, p.z] for p in result.hand_landmarks[0]]
         handedness = result.handedness[0][0].category_name if result.handedness else "Unknown"
-        return Hand(handedness=handedness, points=points)
+        height, width = frame_bgr.shape[:2]
+        return Hand(handedness=handedness, points=points, aspect=width / height)
 
     def close(self) -> None:
         self._landmarker.close()

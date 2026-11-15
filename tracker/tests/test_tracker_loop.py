@@ -6,12 +6,15 @@ import socket
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
 from signtracker import protocol
 from signtracker.__main__ import CAMERA_RETRY_SECONDS, ORPHAN_SECONDS, Tracker, main, parse_args
+from signtracker.classifier import LetterModelMissing
 from signtracker.landmarks import Hand, ModelMissing
 
 FRAME = object()  # stands in for a camera image; the fakes never look inside it
-POINTS = [[0.5, 0.5, 0.0]] * 21
+POINTS = (np.random.default_rng(5).random((21, 3))).tolist()  # any points with a real palm size
 
 
 class FakeSender:
@@ -63,6 +66,19 @@ class FakeFinder:
         pass
 
 
+class FakeModel:
+    """Always sure it sees `letter`. The real model is tested in test_classifier.py."""
+
+    def __init__(self, letter: str = "A", confidence: float = 0.95) -> None:
+        self.letters = ("A", "B")
+        self.probabilities = np.array([confidence, 1 - confidence])
+        if letter == "B":
+            self.probabilities = self.probabilities[::-1]
+
+    def predict(self, _features: np.ndarray) -> np.ndarray:
+        return self.probabilities
+
+
 class FakeClock:
     def __init__(self) -> None:
         self.now = 100.0
@@ -75,7 +91,13 @@ def missing_model() -> FakeFinder:
     raise ModelMissing(Path("models/hand_landmarker.task"))
 
 
-def make_tracker(*flags: str, camera_opens: bool = True, finder: Any = FakeFinder) -> tuple[Tracker, Any, Any]:
+def missing_letter_model() -> FakeModel:
+    raise LetterModelMissing(Path("models/letters.npz"))
+
+
+def make_tracker(
+    *flags: str, camera_opens: bool = True, finder: Any = FakeFinder, model: Any = FakeModel
+) -> tuple[Tracker, Any, Any]:
     sender, camera = FakeSender(), FakeCamera(camera_opens)
     tracker = Tracker(
         parse_args(list(flags)),
@@ -83,6 +105,7 @@ def make_tracker(*flags: str, camera_opens: bool = True, finder: Any = FakeFinde
         receiver=FakeReceiver(),
         camera=camera,
         make_finder=finder,
+        make_model=model,
         clock=FakeClock(),
     )
     return tracker, sender, camera
@@ -125,6 +148,57 @@ def test_landmarks_are_only_sent_when_the_game_asks() -> None:
     tracker.clock.now += 1.0  # past the hand rate limit
     tracker.report(Hand("Right", POINTS))
     assert len(sender.sent[-1]["landmarks"]) == 21
+
+
+def test_a_held_letter_is_sent_once() -> None:
+    tracker, sender, _camera = make_tracker()
+    hand = Hand("Right", POINTS, aspect=16 / 9)
+    for _ in range(tracker.settings.hold_frames * 3):
+        tracker.read_letter(hand)
+    letters = [m for m in sender.sent if m["type"] == "letter"]
+    assert len(letters) == 1
+    assert (letters[0]["letter"], letters[0]["confidence"]) == ("A", 0.95)
+    assert letters[0]["hold_frames"] == tracker.settings.hold_frames
+
+
+def test_a_new_expect_lets_the_same_letter_count_again() -> None:
+    tracker, sender, _camera = make_tracker()
+    hand = Hand("Right", POINTS)
+    for _ in range(tracker.settings.hold_frames):
+        tracker.read_letter(hand)
+    tracker.receiver.poll = lambda: [{"v": 1, "type": "expect", "challenge_id": "c_1", "letters": "AB"}]
+    tracker.step()  # handles the expect; the camera fake gives a frame with no hand
+    tracker.receiver.poll = lambda: []
+    for _ in range(tracker.settings.hold_frames):
+        tracker.read_letter(hand)
+    assert [m["letter"] for m in sender.sent if m["type"] == "letter"] == ["A", "A"]
+
+
+def test_unsure_guesses_send_nothing() -> None:
+    tracker, sender, _camera = make_tracker(model=lambda: FakeModel(confidence=0.6))
+    for _ in range(30):
+        tracker.read_letter(Hand("Right", POINTS))
+    assert not [m for m in sender.sent if m["type"] == "letter"]
+    assert tracker.top == ("A", 0.6)
+
+
+def test_a_missing_letter_model_is_reported_and_survives_the_camera_coming_back() -> None:
+    tracker, sender, camera = make_tracker(model=missing_letter_model)
+    assert tracker.next_frame(100.0) is FRAME  # the camera still runs, for --show
+    assert camera.open_calls == 1
+    assert sender.types() == ["status:model_missing"]  # not "ok" after the camera opened
+    tracker.read_letter(Hand("Right", POINTS))  # no model: nothing happens, nothing breaks
+    assert tracker.top is None
+
+
+def test_config_tunes_the_smoother() -> None:
+    tracker, sender, _camera = make_tracker()
+    tracker.receiver.poll = lambda: [{"v": 1, "type": "config", "hold_frames": 2, "release_frames": 7}]
+    tracker.step()
+    assert (tracker.smoother.hold_frames, tracker.smoother.release_frames) == (2, 7)
+    tracker.read_letter(Hand("Right", POINTS))
+    tracker.read_letter(Hand("Right", POINTS))
+    assert [m["letter"] for m in sender.sent if m["type"] == "letter"] == ["A"]
 
 
 def test_exits_when_the_game_stops_pinging() -> None:
